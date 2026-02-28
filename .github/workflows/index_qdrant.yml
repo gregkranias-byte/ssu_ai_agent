@@ -1,0 +1,28 @@
+name: Index SSU Notes to Qdrant
+
+on:
+  workflow_dispatch:
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run indexing
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          QDRANT_URL: ${{ secrets.QDRANT_URL }}
+          QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+          QDRANT_COLLECTION: ssu_notes_v1
+        run: python ingestion/index_qdrant.py --chunks data/chunks.jsonl
